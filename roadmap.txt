@@ -1,0 +1,20 @@
+1. Linear Regression
+2. Logistic Regression
+3. K-Nearest Neighbors (KNN)
+4. Decision Tree
+5. Random Forest
+6. Support Vector Machines (SVM)
+7. Naive Bayes
+8. K-Means Clustering
+9. Hierarchical Clustering
+10. Principal Component Analysis (PCA)
+11. Gradient Boosting (e.g., XGBoost, LightGBM)
+12. Neural Networks (Feedforward)
+13. Convolutional Neural Networks (CNNs)
+14. Recurrent Neural Networks (RNNs)
+15. Natural Language Processing (NLP)
+16. Reinforcement Learning (e.g., Q-Learning, DQN)
+17. Autoencoders
+18. Generative Adversarial Networks (GANs)
+19. Transfer Learning
+20. Explainable AI (XAI)
