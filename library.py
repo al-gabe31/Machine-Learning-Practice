@@ -1,4 +1,5 @@
 import math
+import random
 
 '''
 x_data: 2D array of inputs (each row representing a single data point)
@@ -121,5 +122,38 @@ def logistic_regression(x_data, y_data, alpha = 0.02, epochs = 100, params = [])
         # updating the coefficient terms
         for i in range(1, len(params)):
             params[i] += alpha * sum_residuals(i - 1) / n
+
+    return params
+
+
+
+
+'''
+x_data: 2D array of inputs (each row representing a single data point)
+    if 1D array of inputs is passed, the function will automatically convert it into 2D where each row is its own 1D array of size 1
+y_data: 1D array of outputs
+sample_rate: float in the range (0, 1) that determines the proportion of data to be sampled
+alpha: used for learning rate of regression model
+epochs: number of simulation runs
+params: list of 1+n scalars used to get prediction value (y-hat) where n is the # of columns
+setting: determines if mini-batch will used linear or logistic regression model
+
+returns the refined parameters & r^2
+'''
+def mini_batch_gradient_descent(x_data, y_data, sample_rate, alpha = 0.02, epochs = 100, params = [], setting = 'linear'):
+    # first combine x & y dataset
+    combined = [(x_data[i], y_data[i]) for i in range(len(x_data))]
+    n = math.floor(len(x_data) * sample_rate) # the number of samples
+
+    for i in range(epochs):
+        curr_sample = random.sample(combined, n) # take n random sample of the combined dataset
+        curr_x_sample = [curr_sample[i][0] for i in range(n)]
+        curr_y_sample = [curr_sample[i][1] for i in range(n)]
+
+        # learn from current sample
+        if setting == 'linear':
+            params = linear_regression(curr_x_sample, curr_y_sample, alpha, epochs=1, params=params)[0]
+        elif setting == 'logistic':
+            params = logistic_regression(curr_x_sample, curr_y_sample, alpha, epochs=1, params=params)
 
     return params

@@ -26,13 +26,18 @@ df_y = [actual(df_x[i]) + sample_differences[i] for i in range(num_samples)]
 params, r2 = linear_regression(df_x, df_y)
 print(params)
 
+mini_batch_params = mini_batch_gradient_descent(df_x, df_y, 0.25, setting='linear')
+print(mini_batch_params)
+
 
 
 x_list = [x/100 for x in range(0, 1000)]
 y_predict = [params[0] + (x * params[1]) for x in x_list]
+y_batch_predict = [mini_batch_params[0] + (x * mini_batch_params[1]) for x in x_list]
 
 plt.scatter(df_x, df_y, color='blue')
 plt.plot(x_list, y_predict, color='red', label=f'y = {round(params[0], 2)} + {round(params[1], 2)}x')
+plt.plot(x_list, y_batch_predict, color='green', label='mini-batch regression line')
 plt.xlabel('x')
 plt.ylabel('y')
 plt.title(f'r^2 = {r2}')
