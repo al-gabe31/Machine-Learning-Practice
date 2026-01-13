@@ -1,5 +1,6 @@
 import math
 import random
+import numpy as np
 
 '''
 x_data: 2D array of inputs (each row representing a single data point)
@@ -8,10 +9,12 @@ y_data: 1D array of outputs
 alpha: used for learning rate of regression model
 epochs: number of simulation runs
 params: list of 1+n scalars used to get prediction value (y-hat) where n is the # of columns
+regularization: if not blank, set it to "L1" or "L2"
+lambda_const: constant value to use for regularization penalty
 
 returns the refined parameters & r^2
 '''
-def linear_regression(x_data, y_data, alpha = 0.02, epochs = 100, params = []):
+def linear_regression(x_data, y_data, alpha = 0.02, epochs = 100, params = [], regularization = '', lambda_const = 1):
 
     # prepping data here
     # converts x_data from 1D to 2D if necessary
@@ -54,19 +57,26 @@ def linear_regression(x_data, y_data, alpha = 0.02, epochs = 100, params = []):
 
         # updating the coefficient terms
         for i in range(1, len(params)):
-            params[i] += 2 * alpha * sum_residuals(i - 1) / n
+            reg_penalty = 0
 
-    # defining r^2
-    sse, sst = 0, 0
-    y_average = sum(y_data) / n
+            if regularization.upper() == 'L1': # lasso regression
+                reg_penalty = alpha * lambda_const * np.sign(params[i])
+            elif regularization.upper() == 'L2': # ridge
+                reg_penalty = 2 * alpha * lambda_const * params[i]
+            
+            params[i] += (2 * alpha * sum_residuals(i - 1) / n) - reg_penalty
 
-    for i in range(n):
-        sse += (y_data[i] - prediction(x_data[i]))**2
-        sst += (y_data[i] - y_average)**2
+    # # defining r^2
+    # sse, sst = 0, 0
+    # y_average = sum(y_data) / n
 
-    r2 = 1 - (sse/sst)
+    # for i in range(n):
+    #     sse += (y_data[i] - prediction(x_data[i]))**2
+    #     sst += (y_data[i] - y_average)**2
 
-    return (params, r2) # returns params & r^2
+    # r2 = 1 - (sse/sst)
+
+    return params
 
 
 
@@ -152,7 +162,7 @@ def mini_batch_gradient_descent(x_data, y_data, sample_rate, alpha = 0.02, epoch
 
         # learn from current sample
         if setting == 'linear':
-            params = linear_regression(curr_x_sample, curr_y_sample, alpha, epochs=1, params=params)[0]
+            params = linear_regression(curr_x_sample, curr_y_sample, alpha, epochs=1, params=params)
         elif setting == 'logistic':
             params = logistic_regression(curr_x_sample, curr_y_sample, alpha, epochs=1, params=params)
 
