@@ -9,10 +9,13 @@ y_data: 1D array of outputs
 alpha: used for learning rate of regression model
 epochs: number of simulation runs
 params: list of 1+n scalars used to get prediction value (y-hat) where n is the # of columns
-regularization: if not blank, set it to "L1" or "L2"
+regularization: setting for the type of regularization
+    * L1 / Lasso
+    * L2 / Ridge
+    * Elastic Net
 lambda_const: constant value to use for regularization penalty
 
-returns the refined parameters & r^2
+returns the refined parameters
 '''
 def linear_regression(x_data, y_data, alpha = 0.02, epochs = 100, params = [], regularization = '', lambda_const = 1):
 
@@ -59,10 +62,12 @@ def linear_regression(x_data, y_data, alpha = 0.02, epochs = 100, params = [], r
         for i in range(1, len(params)):
             reg_penalty = 0
 
-            if regularization.upper() == 'L1': # lasso regression
+            if regularization.upper() == 'L1' or regularization.upper() == 'LASSO': # lasso regression
                 reg_penalty = alpha * lambda_const * np.sign(params[i])
-            elif regularization.upper() == 'L2': # ridge
+            elif regularization.upper() == 'L2' or regularization.upper() == 'RIDGE': # ridge
                 reg_penalty = 2 * alpha * lambda_const * params[i]
+            elif regularization.upper() == 'ELASTIC NET':
+                reg_penalty = (2 * alpha * lambda_const * params[i]) + (alpha * lambda_const * np.sign(params[i]))
             
             params[i] += (2 * alpha * sum_residuals(i - 1) / n) - reg_penalty
 
@@ -78,10 +83,15 @@ y_data: 1D array of outputs
 alpha: used for learning rate of regression model
 epochs: number of simulation runs
 params: list of 1+n scalars used to get prediction value (y-hat) where n is the # of columns
+regularization: setting for the type of regularization
+    * L1 / Lasso
+    * L2 / Ridge
+    * Elastic Net
+lambda_const: constant value to use for regularization penalty
 
-returns the refined parameters & r^2
+returns the refined parameters
 '''
-def logistic_regression(x_data, y_data, alpha = 0.02, epochs = 100, params = []):
+def logistic_regression(x_data, y_data, alpha = 0.02, epochs = 100, params = [], regularization = '', lambda_const = 1):
 
     # prepping data here
     # converts x_data from 1D to 2D if necessary
@@ -121,7 +131,16 @@ def logistic_regression(x_data, y_data, alpha = 0.02, epochs = 100, params = [])
 
         # updating the coefficient terms
         for i in range(1, len(params)):
-            params[i] += alpha * sum_residuals(i - 1) / n
+            reg_penalty = 0
+
+            if regularization.upper() == 'L1' or regularization.upper() == 'LASSO': # lasso regression
+                reg_penalty = alpha * lambda_const * np.sign(params[i])
+            elif regularization.upper() == 'L2' or regularization.upper() == 'RIDGE': # ridge regression
+                reg_penalty = 2 * alpha * lambda_const * params[i]
+            elif regularization.upper() == 'ELASTIC NET':
+                reg_penalty = (2 * alpha * lambda_const * params[i]) + (alpha * lambda_const * np.sign(params[i]))
+            
+            params[i] += (alpha * sum_residuals(i - 1) / n) - reg_penalty
 
     return params
 
@@ -137,10 +156,15 @@ alpha: used for learning rate of regression model
 epochs: number of simulation runs
 params: list of 1+n scalars used to get prediction value (y-hat) where n is the # of columns
 setting: determines if mini-batch will used linear or logistic regression model
+regularization: setting for the type of regularization
+    * L1 / Lasso
+    * L2 / Ridge
+    * Elastic Net
+lambda_const: constant value to use for regularization penalty
 
-returns the refined parameters & r^2
+returns the refined parameters
 '''
-def mini_batch_gradient_descent(x_data, y_data, sample_rate, alpha = 0.02, epochs = 100, params = [], setting = 'linear'):
+def mini_batch_gradient_descent(x_data, y_data, sample_rate, alpha = 0.02, epochs = 100, params = [], setting = 'linear', regularization = '', lambda_const = 1):
     # first combine x & y dataset
     combined = [(x_data[i], y_data[i]) for i in range(len(x_data))]
     n = math.floor(len(x_data) * sample_rate) # the number of samples
@@ -152,8 +176,8 @@ def mini_batch_gradient_descent(x_data, y_data, sample_rate, alpha = 0.02, epoch
 
         # learn from current sample
         if setting == 'linear':
-            params = linear_regression(curr_x_sample, curr_y_sample, alpha, epochs=1, params=params)
+            params = linear_regression(curr_x_sample, curr_y_sample, alpha, epochs=1, params=params, regularization=regularization, lambda_const=lambda_const)
         elif setting == 'logistic':
-            params = logistic_regression(curr_x_sample, curr_y_sample, alpha, epochs=1, params=params)
+            params = logistic_regression(curr_x_sample, curr_y_sample, alpha, epochs=1, params=params, regularization=regularization, lambda_const=lambda_const)
 
     return params
