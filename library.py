@@ -66,16 +66,6 @@ def linear_regression(x_data, y_data, alpha = 0.02, epochs = 100, params = [], r
             
             params[i] += (2 * alpha * sum_residuals(i - 1) / n) - reg_penalty
 
-    # # defining r^2
-    # sse, sst = 0, 0
-    # y_average = sum(y_data) / n
-
-    # for i in range(n):
-    #     sse += (y_data[i] - prediction(x_data[i]))**2
-    #     sst += (y_data[i] - y_average)**2
-
-    # r2 = 1 - (sse/sst)
-
     return params
 
 
